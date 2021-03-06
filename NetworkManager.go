@@ -77,8 +77,8 @@ type NetworkManager interface {
 	GetDeviceByIpIface(interfaceId string) (Device, error)
 
 	// Activate a connection using the supplied device.
-	ActivateConnection(connection Connection, device Device, specificObject *dbus.Object) (ActiveConnection, error)
-
+	ActivateConnection(connection Connection, device Device) (ActiveConnection, error)
+	// ActivateConnection(connection Connection, device Device, specificObject *dbus.Object) (ActiveConnection, error)
 	// Adds a new connection using the given details (if any) as a template (automatically filling in missing settings with the capabilities of the given device), then activate the new connection. Cannot be used for VPN connections at this time.
 	AddAndActivateConnection(connection map[string]map[string]interface{}, device Device) (ActiveConnection, error)
 
@@ -287,7 +287,7 @@ func (nm *networkManager) GetDeviceByIpIface(interfaceId string) (device Device,
 	return
 }
 
-func (nm *networkManager) ActivateConnection(connection Connection, device Device, specificObject *dbus.Object) (ac ActiveConnection, err error) {
+func (nm *networkManager) ActivateConnection(connection Connection, device Device) (ac ActiveConnection, err error) {
 	var connectionPath dbus.ObjectPath
 
 	var devicePath dbus.ObjectPath
@@ -297,14 +297,14 @@ func (nm *networkManager) ActivateConnection(connection Connection, device Devic
 		devicePath = "/"
 	}
 
-	var specificObjectPath dbus.ObjectPath
-	if specificObject != nil {
-		specificObjectPath = specificObject.Path()
-	} else {
-		specificObjectPath = "/"
-	}
+	// var specificObjectPath dbus.ObjectPath
+	// if specificObject != nil {
+	// 	specificObjectPath = specificObject.Path()
+	// } else {
+	// 	specificObjectPath = "/"
+	// }
 
-	err = nm.callWithReturn(&connectionPath, NetworkManagerActivateConnection, connection.GetPath(), devicePath, specificObjectPath)
+	err = nm.callWithReturn(&connectionPath, NetworkManagerActivateConnection, connection.GetPath(), devicePath,)
 	if err != nil {
 		return
 	}
